@@ -13,10 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider')->where('provider', 'github');
+Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback')->where('provider', 'github');
+
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/', 'bookmarkController@index');
+    Route::resource('bookmarks', 'BookmarkController');
+    Route::resource('tags', 'TagController');
+});
